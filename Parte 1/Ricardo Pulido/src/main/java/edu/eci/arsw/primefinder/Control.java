@@ -5,6 +5,8 @@
  */
 package edu.eci.arsw.primefinder;
 
+import java.util.*;
+
 /**
  *
  */
@@ -21,13 +23,14 @@ public class Control extends Thread {
     private Control() {
         super();
         this.pft = new PrimeFinderThread[NTHREADS];
+        List<Integer> primeList = new LinkedList<>();
 
         int i;
         for (i = 0; i < NTHREADS - 1; i++) {
-            PrimeFinderThread elem = new PrimeFinderThread(i * NDATA, (i + 1) * NDATA);
+            PrimeFinderThread elem = new PrimeFinderThread(i * NDATA, (i + 1) * NDATA, primeList, TMILISECONDS);
             pft[i] = elem;
         }
-        pft[i] = new PrimeFinderThread(i * NDATA, MAXVALUE + 1);
+        pft[i] = new PrimeFinderThread(i * NDATA, MAXVALUE + 1, primeList, TMILISECONDS);
     }
 
     public static Control newControl() {
