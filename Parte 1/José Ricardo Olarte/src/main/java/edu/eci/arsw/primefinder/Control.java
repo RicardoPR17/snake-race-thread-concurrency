@@ -5,8 +5,12 @@
  */
 package edu.eci.arsw.primefinder;
 
+import java.awt.*;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+
 /**
- *
+ *  Control que se tiene sobre los Threads
  */
 public class Control extends Thread {
     
@@ -39,6 +43,31 @@ public class Control extends Thread {
         for(int i = 0;i < NTHREADS;i++ ) {
             pft[i].start();
         }
+
+        esperandoENTER();
+
+        synchronized (pft){
+            pft.notifyAll();
+        }
+
+        synchronized (pft){
+            try {
+                pft.wait(TMILISECONDS);
+                System.out.println(pft);
+            }catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+        }
     }
-    
+
+    /**
+     * El usuario precio ENTER, para reanudar los procesos
+     */
+    public static void esperandoENTER(){
+        try {
+            System.in.read();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 }
