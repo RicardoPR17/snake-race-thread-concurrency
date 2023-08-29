@@ -8,15 +8,13 @@ public class PrimeFinderThread extends Thread {
 
     private List<Integer> primes;
     private int mySize;
-    private int TMILISECONDS;
 
-    public PrimeFinderThread(int a, int b, List<Integer> primeList, int TMILISECONDS) {
+    public PrimeFinderThread(int a, int b, List<Integer> primeList) {
         super();
         this.primes = primeList;
         this.a = a;
         this.b = b;
         this.mySize = primeList.size();
-        this.TMILISECONDS = TMILISECONDS;
     }
 
     @Override
@@ -26,7 +24,6 @@ public class PrimeFinderThread extends Thread {
                 try {
                     addPrime(i);
                 } catch (InterruptedException ex) {
-                    ex.printStackTrace();
                 }
             }
         }
@@ -51,8 +48,8 @@ public class PrimeFinderThread extends Thread {
                 this.primes.wait();
             }
 
-            Thread.sleep(this.TMILISECONDS);
-            System.out.println(number);
+            // System.out.println(number);
+            primes.add(number);
             mySize = this.primes.size();
             this.primes.notifyAll();
         }
