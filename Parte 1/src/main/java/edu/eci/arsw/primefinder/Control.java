@@ -43,7 +43,7 @@ public class Control extends Thread {
 
     private boolean areThreadsAlive() {
         for (PrimeFinderThread t : this.pft) {
-            if (t.isAlive()) {
+            if (!t.isInterrupted()) {
                 return true;
             }
         }
@@ -59,21 +59,16 @@ public class Control extends Thread {
 
         int primesCount;
 
-        while (areThreadsAlive()) {
+        boolean supervisor = areThreadsAlive();
+
+        while (supervisor) {
             long start = System.currentTimeMillis();
             long end = start + TMILISECONDS;
-            while (start < end) {
+            while (start <= end) {
                 start = System.currentTimeMillis();
             }
 
             synchronized (primeList) {
-                for (PrimeFinderThread t : this.pft) {
-                    try {
-                        t.wait();
-                    } catch (InterruptedException e) {
-                    }
-                }
-
                 primesCount = primeList.size();
                 System.out.println("Cantidad de primos encontrados: " + primesCount);
 
@@ -84,6 +79,7 @@ public class Control extends Thread {
 
                 primeList.notifyAll();
             }
+            supervisor = areThreadsAlive();
         }
     }
 }

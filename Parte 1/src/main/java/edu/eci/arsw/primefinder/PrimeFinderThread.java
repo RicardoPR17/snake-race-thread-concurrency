@@ -27,6 +27,7 @@ public class PrimeFinderThread extends Thread {
                 }
             }
         }
+        this.interrupt();
     }
 
     boolean isPrime(int n) {
@@ -44,7 +45,7 @@ public class PrimeFinderThread extends Thread {
 
     private void addPrime(int number) throws InterruptedException {
         synchronized (this.primes) {
-            while (this.primes.size() != mySize) {
+            if (this.primes.size() != mySize) {
                 this.primes.wait();
             }
 
