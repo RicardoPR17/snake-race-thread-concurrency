@@ -22,8 +22,15 @@ public class Control extends Thread {
     private final int NDATA = MAXVALUE / NTHREADS;
 
     private PrimeFinderThread pft[];
+    /**
+     * List that contains the primes found by the threads
+     */
     private List<Integer> primeList;
 
+    /**
+     * Constructor of the Control's class, create threads to divide the search of
+     * prime numbers on a range concurrently
+     */
     private Control() {
         super();
         this.pft = new PrimeFinderThread[NTHREADS];
@@ -41,6 +48,11 @@ public class Control extends Thread {
         return new Control();
     }
 
+    /**
+     * Check if the created threads are interrupted or not
+     * 
+     * @return true if at least one thread are running, false otherwise
+     */
     private boolean areThreadsAlive() {
         for (PrimeFinderThread t : this.pft) {
             if (!t.isInterrupted()) {
@@ -50,6 +62,13 @@ public class Control extends Thread {
         return false;
     }
 
+    /**
+     * Start the execution of the threads that find the prime numbers on a given
+     * range. Every 5 seconds, this threads stop his execution and the amount of
+     * prime numbers found are shown. The threads continue the searching after a
+     * keyboard input. This is going to happen until last number in the range is
+     * checked.
+     */
     @Override
     public void run() {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
