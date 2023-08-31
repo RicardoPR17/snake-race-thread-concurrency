@@ -1,0 +1,11 @@
+Solución punto 2
+    - Posibles condiciones de carrera
+        Identificamos que la región crítica son las células del tablero, debido a que en ellas se encuentran todos los objetos que pueden modificar a la serpiente
+        o también las casillas vacías en el tablero. Luego, las posibles condiciones de carrera que pueden funcionar para controlar el acceso concurrente a las variables de estado son:
+            1. 
+            2.
+            3.
+
+    - Uso inadecuado de colecciones
+
+    - Uso inadecuado de esperas activas
