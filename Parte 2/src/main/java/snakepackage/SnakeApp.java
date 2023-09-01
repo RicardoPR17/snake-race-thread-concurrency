@@ -3,15 +3,16 @@ package snakepackage;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import enums.GridSize;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JPanel;
 
 /**
  * @author jd-
@@ -38,6 +39,8 @@ public class SnakeApp {
     int nr_selected = 0;
     Thread[] thread = new Thread[MAX_THREADS];
 
+    private boolean start=false;
+
     public SnakeApp() {
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame("The Snake Race");
@@ -55,6 +58,36 @@ public class SnakeApp {
         
         JPanel actionsBPabel=new JPanel();
         actionsBPabel.setLayout(new FlowLayout());
+        final JButton startButton = new JButton("Start");
+
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!start){
+                    for (Snake sn : snakes) {
+                        sn.setPaused(false);
+                        sn.start();
+                    }
+                    start=true;
+                }
+
+            }
+        });
+        JButton pauseButton = new JButton("Pause");
+        pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(Snake sn: snakes){
+                    sn.setPaused(true);
+                }
+                showMessage(new JFrame("Game in pause"));
+            }
+        });
+        JButton restartButton = new JButton("Resume");
+
+        actionsBPabel.add(startButton);
+        actionsBPabel.add(pauseButton);
+        actionsBPabel.add(restartButton);
         actionsBPabel.add(new JButton("Action "));
         frame.add(actionsBPabel,BorderLayout.SOUTH);
 
@@ -103,6 +136,35 @@ public class SnakeApp {
 
     public static SnakeApp getApp() {
         return app;
+    }
+
+    public  int  longestSnake(){
+        int longestSn=0;
+        int position=0;
+        for(int i=0; i<snakes.length;i++){
+            if (snakes[i].getGrowing() > longestSn && !snakes[i].isSnakeEnd()) {
+                longestSn = snakes[i].getGrowing();
+                position = i + 1;
+            }
+        }
+        return position;
+    }
+
+    public  int firstSnakeToDie(){
+        ArrayList<Integer> deadSnajes= new ArrayList<Integer>();
+        for (int i=0; i<snakes.length;i++){
+            if(snakes[i].isSnakeEnd()){
+                deadSnajes.add(i+1);
+            }
+        }
+        return deadSnajes.get(0);
+    }
+
+    private void showMessage(JFrame message){
+        JOptionPane.showMessageDialog(message,"Long snake:"+ String.valueOf(longestSnake())+ "\n"+
+                "Worst snake: "+  String.valueOf(firstSnakeToDie()), "Pause", JOptionPane.INFORMATION_MESSAGE );
+
+
     }
 
 }

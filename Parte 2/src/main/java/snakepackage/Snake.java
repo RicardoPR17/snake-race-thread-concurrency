@@ -27,6 +27,8 @@ public class Snake extends Observable implements Runnable {
     private int growing = 0;
     public boolean goal = false;
 
+    public boolean paused= true;
+
     public Snake(int idt, Cell head, int direction) {
         this.idt = idt;
         this.direction = direction;
@@ -48,6 +50,16 @@ public class Snake extends Observable implements Runnable {
     @Override
     public void run() {
         while (!snakeEnd) {
+
+            while (paused) {
+                try {
+                    synchronized (this) {
+                        this.wait();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             
             snakeCalc();
 
@@ -343,4 +355,19 @@ public class Snake extends Observable implements Runnable {
         return idt;
     }
 
+    public boolean getPaused() {
+        return paused;
+    }
+
+    synchronized void  setPaused(boolean paused){
+        this.paused=paused;
+    }
+
+    synchronized public  void start(){
+        notify();
+    }
+
+    public int getGrowing() {
+        return growing;
+    }
 }
