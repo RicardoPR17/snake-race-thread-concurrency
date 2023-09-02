@@ -41,6 +41,8 @@ public class SnakeApp {
 
     private boolean start=false;
 
+    int worst = -1;
+
     public SnakeApp() {
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame("The Snake Race");
@@ -83,12 +85,20 @@ public class SnakeApp {
                 showMessage(new JFrame("Game in pause"));
             }
         });
-        JButton restartButton = new JButton("Resume");
+        JButton resumeButton = new JButton("Resume");
+        resumeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(Snake sn: snakes){
+                    sn.setPaused(false);
+                    sn.start();
+                }
+            }
+        });
 
         actionsBPabel.add(startButton);
         actionsBPabel.add(pauseButton);
-        actionsBPabel.add(restartButton);
-        actionsBPabel.add(new JButton("Action "));
+        actionsBPabel.add(resumeButton);
         frame.add(actionsBPabel,BorderLayout.SOUTH);
 
     }
@@ -112,15 +122,29 @@ public class SnakeApp {
 
         frame.setVisible(true);
 
-            
+
         while (true) {
+            /*
+            int size = -1;
+            int k = 0;
+            for(int i=0; i<snakes.length;i++){
+                if (snakes[i].getBody().size() > size && !snakes[i].isSnakeEnd()) {
+                    size = snakes[i].getBody().size();
+                    k = i;
+                }
+            }
+            System.out.println("más larga: [" + k + "], tamano = " + size);
+            */
+
             int x = 0;
             for (int i = 0; i != MAX_THREADS; i++) {
                 if (snakes[i].isSnakeEnd() == true) {
                     x++;
+                    setWorst();
                 }
             }
             if (x == MAX_THREADS) {
+                setWorst();
                 break;
             }
         }
@@ -134,35 +158,44 @@ public class SnakeApp {
 
     }
 
+    public int setLongest(){
+        int longest = 0;
+        for(Snake snake: snakes){
+            if(snake.getBody().size() >= longest && !snake.isSnakeEnd()){
+                longest = snake.getIdt();
+            }
+        }
+        return longest;
+    }
+
+    public int setWorst(){
+        for(Snake snake: snakes){
+            if(worst != -1){
+                break;
+            }
+            if(snake.isSnakeEnd()){
+                worst = snake.getIdt();
+            }
+        }
+        return worst;
+    }
     public static SnakeApp getApp() {
         return app;
     }
 
-    public  int  longestSnake(){
-        int longestSn=0;
-        int position=0;
-        for(int i=0; i<snakes.length;i++){
-            if (snakes[i].getGrowing() > longestSn && !snakes[i].isSnakeEnd()) {
-                longestSn = snakes[i].getGrowing();
-                position = i + 1;
-            }
-        }
-        return position;
-    }
-
-    public  int firstSnakeToDie(){
-        ArrayList<Integer> deadSnajes= new ArrayList<Integer>();
-        for (int i=0; i<snakes.length;i++){
-            if(snakes[i].isSnakeEnd()){
-                deadSnajes.add(i+1);
-            }
-        }
-        return deadSnajes.get(0);
-    }
-
     private void showMessage(JFrame message){
-        JOptionPane.showMessageDialog(message,"Long snake:"+ String.valueOf(longestSnake())+ "\n"+
-                "Worst snake: "+  String.valueOf(firstSnakeToDie()), "Pause", JOptionPane.INFORMATION_MESSAGE );
+        /*
+        for (Snake snake: snakes){
+            int i = snake.getIdt();
+            System.out.println("--");
+            System.out.println("["+i+"]");
+            System.out.println("size: "+snake.getBody().size());
+            System.out.println("dead " + (snake.isSnakeEnd()));
+            System.out.println("--------------------------");
+        }
+         */
+        JOptionPane.showMessageDialog(message,"Long snake: ["+ String.valueOf(setLongest())+ "]\n"+
+                "Worst snake: ["+  String.valueOf(worst) + "]", "Pause", JOptionPane.INFORMATION_MESSAGE );
 
 
     }

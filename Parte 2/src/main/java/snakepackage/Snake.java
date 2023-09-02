@@ -114,7 +114,7 @@ public class Snake extends Observable implements Runnable {
         if (Board.gameboard[newCell.getX()][newCell.getY()].isBarrier()) {
             // crash
             System.out.println("[" + idt + "] " + "CRASHED AGAINST BARRIER "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
             snakeEnd=true;
         }
     }
@@ -175,7 +175,7 @@ public class Snake extends Observable implements Runnable {
 
             }
             System.out.println("[" + idt + "] " + "GETTING TURBO BOOST "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
         }
     }
 
@@ -192,7 +192,7 @@ public class Snake extends Observable implements Runnable {
 
             }
             System.out.println("[" + idt + "] " + "GETTING JUMP PAD "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
         }
     }
 
@@ -206,7 +206,7 @@ public class Snake extends Observable implements Runnable {
             int y = random.nextInt(GridSize.GRID_WIDTH);
 
             System.out.println("[" + idt + "] " + "EATING "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
 
             for (int i = 0; i != Board.NR_FOOD; i++) {
                 if (Board.food[i].getX() == newCell.getX()
