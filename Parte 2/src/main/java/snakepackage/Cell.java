@@ -3,10 +3,10 @@ package snakepackage;
 /**
  * Classe Cell
  * 
- * contem informacao sobre o estado da celula, 
+ * contem informacao sobre o estado da celula,
  * se contem elementos,
- *  quais, 
- *  e trata da Sincronizacao e coordenacao no acesso � mesma
+ * quais,
+ * e trata da Sincronizacao e coordenacao no acesso � mesma
  * 
  * @author Joao Andrade 28445
  * @author Diana Pereira 38074
@@ -15,26 +15,26 @@ public class Cell {
 
 	/** X - Coordenada X da celula */
 	private int x;
-	
+
 	/** Y - Coordenada Y da celula */
 	private int y;
-	
+
 	/** full - Se Celula preenchida por uma cobra ou barreira */
 	private boolean full;
-	
-	
+
 	/** food - Se Celula preenchida por uma comida */
 	private boolean food;
-	
-	/** jump_pad - Se Celula preenchida por um salto ao eixo*/
+
+	/** jump_pad - Se Celula preenchida por um salto ao eixo */
 	private boolean jump_pad;
-	
+
 	/** turbo_boost - Se Celula preenchida por um turbo-boost */
 	private boolean turbo_boost;
-	
+
 	private boolean barrier;
 
-	
+	private boolean inAnalysis = false;
+
 	/**
 	 * Verifica se Celula tem turbo_boost.
 	 *
@@ -154,7 +154,7 @@ public class Cell {
 		this.full = full;
 	}
 
-	/* 
+	/*
 	 * o toString da celula para imprimir na consola
 	 */
 	public String toString() {
@@ -162,9 +162,9 @@ public class Cell {
 
 	}
 
-
 	/**
-	 * Liberta celula ( ultimo elemento da cobra liberta esta celula para poder ser ocupada por outras )
+	 * Liberta celula ( ultimo elemento da cobra liberta esta celula para poder ser
+	 * ocupada por outras )
 	 */
 	public synchronized void freeCell() {
 		full = false;
@@ -174,10 +174,10 @@ public class Cell {
 	/**
 	 * Verifica se Celula tem elements ( comida, salto-ao-eixo, cobras, barreiras ).
 	 *
-	 * @return true, 
+	 * @return true,
 	 */
 	public boolean hasElements() {
-		if (this.full == true ||  this.food == true
+		if (this.full == true || this.food == true
 				|| this.jump_pad == true) {
 			return true;
 		}
@@ -190,6 +190,14 @@ public class Cell {
 
 	public void setBarrier(boolean barrier) {
 		this.barrier = barrier;
+	}
+
+	public boolean isCellInAnalysis() {
+		return inAnalysis;
+	}
+
+	public void setCellInAnalysis(boolean inAnalysis) {
+		this.inAnalysis = inAnalysis;
 	}
 
 }

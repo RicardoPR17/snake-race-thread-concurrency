@@ -13,7 +13,7 @@ public class Snake extends Observable implements Runnable {
     private Cell head;
     private Cell newCell;
     private LinkedList<Cell> snakeBody = new LinkedList<Cell>();
-    //private Cell objective = null;
+    // private Cell objective = null;
     private Cell start = null;
 
     private boolean snakeEnd = false;
@@ -42,12 +42,11 @@ public class Snake extends Observable implements Runnable {
 
     private void generateSnake(Cell head) {
         start = head;
-        //Board.gameboard[head.getX()][head.getY()].reserveCell(jumps, idt);
+        // Board.gameboard[head.getX()][head.getY()].reserveCell(jumps, idt);
         snakeBody.add(head);
         growing = INIT_SIZE - 1;
     }
 
-    @Override
     public void run() {
         while (!snakeEnd) {
 
@@ -60,28 +59,29 @@ public class Snake extends Observable implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
-            
+          
             snakeCalc();
 
-            //NOTIFY CHANGES TO GUI
+            // NOTIFY CHANGES TO GUI
             setChanged();
             notifyObservers();
 
-            try {
-                if (hasTurbo == true) {
-                    Thread.sleep(500 / 3);
-                } else {
-                    Thread.sleep(500);
+            if (!snakeEnd) {
+                try {
+                    if (hasTurbo == true) {
+                        Thread.sleep(500 / 3);
+                    } else {
+                        Thread.sleep(500);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
         }
-        
+
         fixDirection(head);
-        
-        
+
     }
 
     private void snakeCalc() {
@@ -90,14 +90,31 @@ public class Snake extends Observable implements Runnable {
         newCell = head;
 
         newCell = changeDirection(newCell);
-        
+
         randomMovement(newCell);
 
-        checkIfFood(newCell);
-        checkIfJumpPad(newCell);
-        checkIfTurboBoost(newCell);
+        synchronized (newCell) {
+
+            while (newCell.isCellInAnalysis()) {
+                try {
+                    newCell.wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                }
+            }
+
+            newCell.setCellInAnalysis(true);
+
+            checkIfFood(newCell);
+            checkIfJumpPad(newCell);
+            checkIfTurboBoost(newCell);
+
+            newCell.setCellInAnalysis(false);
+            newCell.notifyAll();
+        }
+
         checkIfBarrier(newCell);
-        
+
         snakeBody.push(newCell);
 
         if (growing <= 0) {
@@ -119,7 +136,6 @@ public class Snake extends Observable implements Runnable {
         }
     }
 
-    
     private Cell fixDirection(Cell newCell) {
 
         // revert movement
@@ -333,11 +349,13 @@ public class Snake extends Observable implements Runnable {
         }
     }
 
-    /*public void setObjective(Cell c) {
-        System.out.println("Setting objective - " + c.getX() + ":" + c.getY()
-                + " for Snake" + this.idt);
-        this.objective = c;
-    }*/
+    /*
+     * public void setObjective(Cell c) {
+     * System.out.println("Setting objective - " + c.getX() + ":" + c.getY()
+     * + " for Snake" + this.idt);
+     * this.objective = c;
+     * }
+     */
 
     public LinkedList<Cell> getBody() {
         return this.snakeBody;
@@ -359,11 +377,11 @@ public class Snake extends Observable implements Runnable {
         return paused;
     }
 
-    synchronized void  setPaused(boolean paused){
+    synchronized void setPaused(boolean paused){
         this.paused=paused;
     }
 
-    synchronized public  void start(){
+    public synchronized void start(){
         notify();
     }
 
