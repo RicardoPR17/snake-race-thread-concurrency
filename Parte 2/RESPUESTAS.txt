@@ -1,0 +1,46 @@
+Solución punto 2
+    - Posibles condiciones de carrera
+        Identificamos que la región crítica son las células del tablero, debido a que en ellas se encuentran todos
+        los objetos que pueden modificar a la serpiente o también las casillas vacías en el tablero. Luego, la
+        posible condición de carrera que puede funcionar para controlar el acceso concurrente a las variables 
+        de estado es:
+
+        Para evitar que dos serpientes que hubiesen comido un ratón al tiempo modifiquen la misma 
+        célula, es decir, que intenten reasignar el objeto consumido en la misma célula y se pierda dicha
+        reasignación por escribir en la misma célula dos objetos. Consideramos que se pueden sincronizar
+        las células para manejar su acceso concurrente y mientras que se esté trabajando en la lógica de reasignar
+        la posición de algún objeto, se obliga a las otras serpientes a detenerse para evitar que se solapen los 
+        cambios en una misma célula.
+        
+        Además, para evitar que se modifiquen las características de una serpiente por un objeto que ya no está 
+        en esa posición, también vamos a sincronizar el llamado a estos métodos.
+
+    - Uso inadecuado de colecciones
+        Consideramos que las colecciones se manejan de manera adecuada teniendo en cuenta la concurrencia que debe 
+        manejar la aplicación. Ahora bien, al aumentar la velocidad del juego pudimos notar que se arroja una excepción
+        porque la interfaz no responde a la misma velocidad en la que están sucediendo los cambios en la partida.
+
+    - Uso innecesario de esperas activas
+        Al acelerar el ritmo del juego pudimos notar que una de las serpientes no quedaba en estado terminado, quedaba
+        en estado de espera. Lo que quiere decir que la ejecución del programa acabó mientras una de las serpientes
+        aún estaba dormida. Es una espera innecesaria debido a que interfiere en la finalización del juego.
+
+Solución punto 3
+    - Para tratar las condiciones de carrera vamos a sincronizar las células en los llamados al método que reasigna
+    ratones, para evitar que se reasignen en el mismo lugar (si dos serpientes llegaran a realizar estas acciones 
+    de forma simultánea). Es decir, mientras que se esté trabajando en la lógica de reasignar la posición de algún
+    ratón, se obliga a las otras serpientes a detenerse para evitar que se solapen los cambios.
+
+    También añadimos a la sincronización anterior el llamado a los métodos de salto y aumento de velocidad para que cuando una serpiente
+    consuma el objeto se evite que otra que llegue al tiempo también modifique su comportamiento, pese a que el objeto 
+    ya no se encontraría en esa posición, se obliga a las otras serpientes a detenerse para evitar que se solapen 
+    los cambios.
+
+    Para esto le agregamos un atributo a la célula para saber si está siendo evaluada por alguna serpiente, para
+    controlar la espera de las demás serpientes sobre esa misma célula. Además sincronizamos la célula al momento de que
+    una serpiente la vaya a analizar. Luego de que acabe su tarea, notificamos a las demás serpientes que pueden 
+    entrar a revisar la célula.
+
+    - Por su parte, para evitar la espera vamos a revisar el estado de la serpiente antes de que realice el próximo
+    movimiento, puesto que puede haber colisionado, pero hasta intentar moverse es que se actualizará su estado.
+    Con esto nos aseguramos que el programa finalice sin problemas.
