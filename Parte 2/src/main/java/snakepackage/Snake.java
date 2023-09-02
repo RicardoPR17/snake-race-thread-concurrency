@@ -27,6 +27,8 @@ public class Snake extends Observable implements Runnable {
     private int growing = 0;
     public boolean goal = false;
 
+    public boolean paused= true;
+
     public Snake(int idt, Cell head, int direction) {
         this.idt = idt;
         this.direction = direction;
@@ -48,6 +50,16 @@ public class Snake extends Observable implements Runnable {
     public void run() {
         while (!snakeEnd) {
 
+            while (paused) {
+                try {
+                    synchronized (this) {
+                        this.wait();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+          
             snakeCalc();
 
             // NOTIFY CHANGES TO GUI
@@ -119,8 +131,8 @@ public class Snake extends Observable implements Runnable {
         if (Board.gameboard[newCell.getX()][newCell.getY()].isBarrier()) {
             // crash
             System.out.println("[" + idt + "] " + "CRASHED AGAINST BARRIER "
-                    + newCell.toString());
-            snakeEnd = true;
+                    + newCell.toString() + " size: "+snakeBody.size());
+            snakeEnd=true;
         }
     }
 
@@ -179,7 +191,7 @@ public class Snake extends Observable implements Runnable {
 
             }
             System.out.println("[" + idt + "] " + "GETTING TURBO BOOST "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
         }
     }
 
@@ -196,7 +208,7 @@ public class Snake extends Observable implements Runnable {
 
             }
             System.out.println("[" + idt + "] " + "GETTING JUMP PAD "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
         }
     }
 
@@ -210,7 +222,7 @@ public class Snake extends Observable implements Runnable {
             int y = random.nextInt(GridSize.GRID_WIDTH);
 
             System.out.println("[" + idt + "] " + "EATING "
-                    + newCell.toString());
+                    + newCell.toString() + " size: "+snakeBody.size());
 
             for (int i = 0; i != Board.NR_FOOD; i++) {
                 if (Board.food[i].getX() == newCell.getX()
@@ -361,4 +373,19 @@ public class Snake extends Observable implements Runnable {
         return idt;
     }
 
+    public boolean getPaused() {
+        return paused;
+    }
+
+    synchronized void setPaused(boolean paused){
+        this.paused=paused;
+    }
+
+    public synchronized void start(){
+        notify();
+    }
+
+    public int getGrowing() {
+        return growing;
+    }
 }
